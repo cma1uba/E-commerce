@@ -2,10 +2,12 @@ const cartIcon = document.querySelector("#cart-icon");
 const cart = document.querySelector(".cart");
 const cartClose = document.querySelector("#cart-close");
 
+//open and close cart.
 cartIcon.addEventListener("click", () => cart.classList.add("active"));
 
 cartClose.addEventListener("click", () => cart.classList.remove("active"));
 
+//adding products to carts
 const addCartButtons = document.querySelectorAll(".add-cart");
 addCartButtons.forEach(button => {
     button.addEventListener("click", event => {
@@ -50,6 +52,7 @@ const addToCart = productBox => {
        cartBox.remove(); 
         
         updateTotalPrice();
+        updateCartCount(-1);
     });
     
    cartBox.querySelector(".cart-quantity").addEventListener("click", event =>{
@@ -72,9 +75,11 @@ const addToCart = productBox => {
         
     });
     updateTotalPrice();
+    updateCartCount(1);
 };
 
-const updateTotalPrice = () => {
+//Updating prices
+function updateTotalPrice(){
   const totalPriceElement = document.querySelector(".total-price");
 const cartBoxes = document.querySelectorAll(".cart-box");
 let total = 0;
@@ -88,3 +93,18 @@ cartBoxes.forEach(cartBox => {
 });
     totalPriceElement.textContent = `$${total}`;
 };
+
+//Display number of items added to cart.
+let cartItemCount = 0;
+function updateCartCount(change){
+    const cartItemCountBadge = document.querySelector(".cart-item-count");
+    cartItemCount += change;
+    if (cartItemCount > 0){
+        cartItemCountBadge.style.visibility = "visible";
+        cartItemCountBadge.textContent = cartItemCount;
+    } else{
+        cartItemCountBadge.style.visibility = "hidden";
+        cartItemCountBadge.textContent = "";
+    }
+    
+                                                                }
