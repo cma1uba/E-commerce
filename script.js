@@ -106,5 +106,21 @@ function updateCartCount(change){
         cartItemCountBadge.style.visibility = "hidden";
         cartItemCountBadge.textContent = "";
     }
+}
+
+//Submit button message
+const buyNowButton = document.querySelector(".btn-buy");
+buyNowButton.addEventListener("click", () =>{
+   const cartBoxes = cartContent.querySelectorAll(".cart-box");
+    if (cartBoxes.length === 0){
+        alert("Your cart is empty");
+        return;
+    }
+    cartBoxes.forEach(cartBox => cartBox.remove());
     
-                                                                }
+    updateTotalPrice();
+    cartItemCount = 0;
+    updateCartCount(0);
+    
+    alert("Purchase succefully submited");
+});
