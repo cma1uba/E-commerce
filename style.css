@@ -5,6 +5,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
+
 }
 body{
     color: #333;
@@ -20,7 +21,7 @@ header{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 99;
+    z-index: 90;
 }
 .logo{
     font-size: 25px;
