@@ -1,3 +1,10 @@
+// Initialize Pendo with anonymous visitor
+pendo.initialize({
+    visitor: {
+        id: ''
+    }
+});
+
 const cartIcon = document.querySelector("#cart-icon");
 const cart = document.querySelector(".cart");
 const cartClose = document.querySelector("#cart-close");
