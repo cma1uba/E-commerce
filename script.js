@@ -32,6 +32,10 @@ const addToCart = productBox => {
     const cartItems = cartContent.querySelectorAll(".cart-product-title");
     for(let item of cartItems){
         if (item.textContent === productTitle){
+            pendo.track("duplicate_product_add_attempted", {
+                productTitle: productTitle,
+                productPrice: productPrice
+            });
             alert("You already added this product");
             return;
         };
@@ -56,17 +60,28 @@ const addToCart = productBox => {
     cartContent.appendChild(cartBox);
     
     cartBox.querySelector(".cart-remove").addEventListener("click", () => {
-       cartBox.remove(); 
-        
+        const removedTitle = cartBox.querySelector(".cart-product-title").textContent;
+        const removedPrice = cartBox.querySelector(".cart-price").textContent;
+        const removedQuantity = cartBox.querySelector(".number").textContent;
+        cartBox.remove();
+
         updateTotalPrice();
         updateCartCount(-1);
+
+        pendo.track("product_removed_from_cart", {
+            productTitle: removedTitle,
+            productPrice: removedPrice,
+            quantity: Number(removedQuantity),
+            remainingCartItems: cartContent.querySelectorAll(".cart-box").length
+        });
     });
     
    cartBox.querySelector(".cart-quantity").addEventListener("click", event =>{
         const numberElement = cartBox.querySelector(".number");
         const decrementButton = cartBox.querySelector("#decrement");
-        let quantity = numberElement.textContent;
-        
+        let previousQuantity = Number(numberElement.textContent);
+        let quantity = previousQuantity;
+
         if (event.target.id === "decrement" && quantity > 1) {
             quantity--;
             if (quantity === 1){
@@ -76,13 +91,30 @@ const addToCart = productBox => {
             quantity++;
             decrementButton.style.color = "#333";
         }
-        
+
         numberElement.textContent = quantity;
        updateTotalPrice();
-        
+
+        if (quantity !== previousQuantity) {
+            pendo.track("cart_quantity_changed", {
+                productTitle: cartBox.querySelector(".cart-product-title").textContent,
+                productPrice: cartBox.querySelector(".cart-price").textContent,
+                previousQuantity: previousQuantity,
+                newQuantity: quantity,
+                direction: quantity > previousQuantity ? "increment" : "decrement"
+            });
+        }
+
     });
     updateTotalPrice();
     updateCartCount(1);
+
+    pendo.track("product_added_to_cart", {
+        productTitle: productTitle,
+        productPrice: productPrice,
+        productImageSrc: productImgSrc,
+        cartItemCount: cartItemCount
+    });
 };
 
 //Updating prices
@@ -123,11 +155,30 @@ buyNowButton.addEventListener("click", () =>{
         alert("Your cart is empty");
         return;
     }
+
+    const totalPrice = document.querySelector(".total-price").textContent;
+    const productTitles = [];
+    const productPrices = [];
+    const quantities = [];
+    cartBoxes.forEach(cartBox => {
+        productTitles.push(cartBox.querySelector(".cart-product-title").textContent);
+        productPrices.push(cartBox.querySelector(".cart-price").textContent);
+        quantities.push(Number(cartBox.querySelector(".number").textContent));
+    });
+
+    pendo.track("purchase_completed", {
+        totalPrice: totalPrice,
+        itemCount: cartBoxes.length,
+        productTitles: productTitles,
+        productPrices: productPrices,
+        quantities: quantities
+    });
+
     cartBoxes.forEach(cartBox => cartBox.remove());
-    
+
     updateTotalPrice();
     cartItemCount = 0;
     updateCartCount(0);
-    
+
     alert("Purchase succefully submited");
 });
